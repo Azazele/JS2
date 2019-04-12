@@ -42,6 +42,13 @@ header .container{
 	border-radius: 5px;
 	width: 100px;
 }
+#clearbasket{
+	height: 30px;
+	border-radius: 5px;
+	width: 200px;
+	margin: 0 auto;
+	display: block;
+}
 
 .goods-list{
 	display: flex;
@@ -58,4 +65,26 @@ header .container{
 	-webkit-box-shadow: 3px 8px 22px -6px rgba(0,0,0,0.19);
 	-moz-box-shadow: 3px 8px 22px -6px rgba(0,0,0,0.19);
 	box-shadow: 3px 8px 22px -6px rgba(0,0,0,0.19);
+}
+
+.basket{
+	display: flex;
+  	justify-content: space-around;
+  	flex-wrap: wrap;
+	background: #fefefe;
+	width: 800px;
+	height: 500px;
+	position: absolute;
+	right: 500px;
+	display: none;
+	padding: 20px;
+}
+.basket-content{
+	display: flex;
+  	justify-content: space-around;
+  	flex-wrap: wrap;
+	background: #fefefe;
+}
+.show{
+	display: block;
 }
