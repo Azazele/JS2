@@ -1,5 +1,40 @@
 "use strict"
 
+function makeGETRequest(url, callback) {
+	return new Promise(function(resolve, reject) {
+		var xhr;
+		if (window.XMLHttpRequest) {
+		xhr = new XMLHttpRequest();
+		} else if (window.ActiveXObject) { 
+		xhr = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+		xhr.onreadystatechange = function () {
+		if (xhr.readyState === 4) {
+		  callback(xhr.responseText);
+		}
+		}
+
+		xhr.open('GET', url, true);
+
+		xhr.onload = function() {
+	      if (this.status == 200) {
+	        resolve(this.response);
+	      } else {
+	        reject('Какая-та ошибка');
+	      }
+	    };
+	    xhr.onerror = function() {
+	    	reject('Какая-та ошибка');
+	    };
+
+		xhr.send();
+	})
+}
+
+const API_URL = "http://davidmakhnev.ru/JSON/API-JS2/";
+
+
 class GoodsItem {
 	constructor(name, price, img, gid) {
 		this.name = name;
@@ -16,17 +51,8 @@ class GoodsList {
 	constructor() {
 		this.goods = [];
 	}
-	fetchGoods() {
-		this.goods = [
-			{name : "Samsung", price : 51242, img: 'https://pp.userapi.com/c850520/v850520354/fa861/ZYA91t0Td6E.jpg', gid : 0},
-			{name : "Huawei", price : 34549, img: 'https://pp.userapi.com/c850520/v850520354/fa86a/t8nwP-xKRCo.jpg', gid : 1},
-			{name : "iPhone", price : 85500, img: 'https://pp.userapi.com/c850520/v850520354/fa873/QHOs8XaLLUE.jpg', gid : 2},
-			{name : "Xiaomi", price : 14222, img: 'https://pp.userapi.com/c850520/v850520354/fa885/FOODWxFDQHo.jpg', gid : 3},
-			{name : "Alcatel", price : 5541, img: 'https://pp.userapi.com/c850520/v850520354/fa88e/ajhR5v7Oo0g.jpg', gid : 4},
-			{name : "Motorolla", price : 7891, img: 'https://pp.userapi.com/c850520/v850520354/fa8a0/HxtOn6-6HOU.jpg', gid : 5},
-			{name : "Sony", price : 26999, img: 'https://pp.userapi.com/c850520/v850520354/fa8a9/nUw0w6P859o.jpg', gid : 6},
-			{name : "Nokia", price : 12340, img: 'https://pp.userapi.com/c850520/v850520354/fa8b2/mwOB497RTVs.jpg', gid : 7}
-		];
+	fetchGoods(cb) {
+		return makeGETRequest(`${API_URL}goods.json`, (goods) => {this.goods = JSON.parse(goods);});
 	}
 	getSumm(){
 		let summ = 0;
@@ -35,15 +61,16 @@ class GoodsList {
 		}
 		return summ;
 	}
+	render(){
+		for (var i = 0; i < this.goods.length; i++) {
+			const gitem = this.goods.map(item => new GoodsItem(item.name, item.price, item.img, item.gid));
+			document.querySelector('.goods-list').innerHTML += gitem[i].render();
+		}
+	}
 }
 
-const glist = new GoodsList();
-glist.fetchGoods()
 
-for (var i = 0; i < glist.goods.length; i++) {
-	const gitem = glist.goods.map(item => new GoodsItem(item.name, item.price, item.img, item.gid));
-	document.querySelector('.goods-list').innerHTML += gitem[i].render();
-}
+
 
 
 class BasketItem {
@@ -61,27 +88,65 @@ class BasketItem {
 
 class BasketList {
 	constructor() {
-		this.puttedGoods = [];
+		this.basket = [];
 	}
 	putGood(goods, goodClass){
 		for(let i = 0; i < goods.length; i++){
 			goodClass[i].addEventListener("click", () => {
-			  	let numOfGood = goodClass[i].getAttribute('data-id');
-			  	this.puttedGoods.push(goods[numOfGood]);
+				document.querySelector('.basket-content').innerHTML = '';
+				makeGETRequest(`${API_URL}addToBasket.json`, (goods) => {
+					let result = JSON.parse(goods); 
+					if (result.result == 1){
+						return makeGETRequest(`${API_URL}basket.json`, (goods) => {this.basket = JSON.parse(goods)})
+						.then(resolve => {this.render()})
+						.then(resolve => {this.deleteGoods()})
+						.catch(reject => console.error(reject));
+					} else {
+						console.error('Ошибка при добавлнии товара');
+					}
+				});
+			  	
 			});
 		}
 	}
+	deleteGoods(){
+		clearbasket.addEventListener("click", () => {
+			makeGETRequest(`${API_URL}deleteFromBasket.json`, (goods) => {
+				let result = JSON.parse(goods); 
+				if (result.result == 1){
+					document.querySelector('.basket-content').innerHTML = '';
+					this.basket = [];
+				} else {
+					console.error('Ну удалось удалить товары');
+				}
+			});
+		  	
+		});
+	}
 	getSumm(){
-		let summ = 0;
-		for(let i = 0; i < this.puttedGoods.length; i++){
-			summ += this.puttedGoods[i].price;
-		}
+		let summ = this.basket.amount;
 		return summ;
 	}
 	render() {
-		
+		for (var i = 0; i < this.basket.contents.length; i++) {
+			const gitem = this.basket.contents.map(item => new GoodsItem(item.name, item.price, item.img, item.gid));
+			document.querySelector('.basket-content').innerHTML += gitem[i].render();
+		}
 	}
 }
 
+
+const glist = new GoodsList();
 const blist = new BasketList();
-blist.putGood(glist.goods, document.getElementsByClassName('goods-item'));
+
+glist.fetchGoods()
+.then(resolve => {glist.render()})
+.then(resolve => blist.putGood(glist.goods, document.getElementsByClassName('goods-item')))
+.catch(reject => console.error(reject));
+
+let bButton = document.getElementById('basket');
+let buttonBlist = document.getElementById('basket-list');
+
+bButton.addEventListener("click", () => {
+	buttonBlist.classList.toggle('show');
+});
