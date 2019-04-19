@@ -61,11 +61,26 @@ class GoodsList {
 		}
 		return summ;
 	}
-	render(){
-		for (var i = 0; i < this.goods.length; i++) {
-			const gitem = this.goods.map(item => new GoodsItem(item.name, item.price, item.img, item.gid));
+	//добавлена возможность рендеринга найденного
+	render(goods = this.goods){
+		document.querySelector('.goods-list').innerHTML = '';
+		for (var i = 0; i < goods.length; i++) {
+			const gitem = goods.map(item => new GoodsItem(item.name, item.price, item.img, item.gid));
 			document.querySelector('.goods-list').innerHTML += gitem[i].render();
 		}
+	}
+	//функция фильтрации товаров
+	filterGoods(value){
+		let foundGoods = [];
+		let reg = new RegExp(value, 'ig');
+		for (var i = 0; i < this.goods.length; i++) {
+			if(reg.test(this.goods[i].name) == true) {
+				foundGoods.push(this.goods[i]);
+				console.log(foundGoods);
+			}
+		}
+		this.render(foundGoods);
+		
 	}
 }
 
@@ -150,3 +165,10 @@ let buttonBlist = document.getElementById('basket-list');
 bButton.addEventListener("click", () => {
 	buttonBlist.classList.toggle('show');
 });
+
+// Поиск и рендеринг найденного + дубль функции putGood, чтобы работала после поиска
+search.addEventListener("click", () => {
+	glist.filterGoods(searchValue.value);
+	blist.putGood(glist.goods, document.getElementsByClassName('goods-item'));
+});
+
