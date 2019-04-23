@@ -37,10 +37,15 @@ header .container{
 	width: 100px;
 }
 
-#basket{
+#basket, .search-button{
 	height: 30px;
 	border-radius: 5px;
 	width: 100px;
+}
+input[type="text"]{
+	width: 200px;
+	height: 27px;
+	border-radius: 5px;
 }
 #clearbasket{
 	height: 30px;
