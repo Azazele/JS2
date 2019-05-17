@@ -3,6 +3,13 @@
     "countGoods": 8,
     "contents": [
         {
+            "quantity": 2,
+            "name": "Alcatel",
+            "price": 5541,
+            "img": "https://pp.userapi.com/c850520/v850520354/fa88e/ajhR5v7Oo0g.jpg",
+            "gid": 4
+        },
+        {
             "quantity": 1,
             "name": "iPhone",
             "price": 85500,
