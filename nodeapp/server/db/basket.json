@@ -1,0 +1,13 @@
+{
+    "amount": 238284,
+    "countGoods": 8,
+    "contents": [
+        {
+            "quantity": 1,
+            "name": "iPhone",
+            "price": 85500,
+            "img": "https://pp.userapi.com/c850520/v850520354/fa873/QHOs8XaLLUE.jpg",
+            "gid": 2
+        }
+    ]
+}
