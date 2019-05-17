@@ -82,18 +82,6 @@ let app = new Vue ({
                             }
                         })
                 }
-            // this.getJson(`${API + this.apis.canAddToBasket}`)
-            //     .then(data => {
-            //         if(data.result){
-            //                 let find = this.basketGoods.find(el => el.gid === product.gid);
-            //             if(find){
-            //                 find.quantity++;
-            //             } else {
-            //                 let prod = Object.assign({quantity: 1}, product);
-            //                 this.basketGoods.push(prod);
-            //             }
-            //         }
-            //     })
         },
         remove(product){
             let find = this.basketGoods.find(el => el.gid === product.gid);
@@ -112,16 +100,6 @@ let app = new Vue ({
                         }
                     })
             }
-            // this.getJson(`${API + this.apis.canDeleteFromBasket}`)
-            //     .then(data => {
-            //         if(data.result){
-            //             if(product.quantity > 1){
-            //                 product.quantity--;
-            //             } else {
-            //                 this.basketGoods.splice(this.basketGoods.indexOf(product), 1);
-            //             }
-            //         }
-            //     })
         },
         
     },
